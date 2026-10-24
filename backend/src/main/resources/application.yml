@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/css,text/javascript,application/javascript
+    min-response-size: 2048
+
+spring:
+  application:
+    name: infra-monitor
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/monitor?reWriteBatchedInserts=true
+    username: ${DB_USER:monitor}
+    password: ${DB_PASSWORD:monitor}
+    hikari:
+      maximum-pool-size: 10
+  jackson:
+    default-property-inclusion: non_null
+  web:
+    resources:
+      static-locations: classpath:/static/,file:../frontend/dist/
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+monitor:
+  seed:
+    mode: if-empty
+    clusters: 20
+    nodes-per-cluster: 10
+    namespaces-per-node: 10
+    pods-per-namespace: 50
+    random-seed: 42
+  simulator:
+    enabled: true
+    interval-ms: 2000
+    changes-per-tick: 120
+
+logging:
+  level:
+    io.infra.monitor: INFO
